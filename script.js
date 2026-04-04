@@ -75,6 +75,44 @@ document.querySelectorAll('.portfolio-item, .about, .contact').forEach(el => {
     el.style.transform = 'translateY(30px)';
     el.style.transition = 'all 0.6s ease';
     observer.observe(el);
-});
+}); 
 
 window.addEventListener('load', animateOnScroll);
+
+const API_KEY = 'AIzaSyCCMHrto2XCcfdFLz6Yk8p9YOlvwaURKEs';
+    const CHANNEL_ID = 'UU09Gi59MsLXEfVmJZuItnig'; // Replace with your channel's ID
+    const MAX_RESULTS = 3;
+
+    // 1. Convert Channel ID to Upload Playlist ID (Change 'UC' to 'UU')
+    const UPLOAD_PLAYLIST_ID = CHANNEL_ID.replace(/^UC/, 'UU');
+
+    async function getLatestVideos() {
+        const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${UPLOAD_PLAYLIST_ID}&maxResults=${MAX_RESULTS}&key=${API_KEY}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            const container = document.getElementById('youtube-feed');
+
+            data.items.forEach(item => {
+                const videoId = item.snippet.resourceId.videoId;
+                const title = item.snippet.title;
+                
+                const videoHTML = `
+                    <div style="width: 300px;">
+                        <iframe width="100%" height="200" 
+                            src="https://www.youtube.com/embed/${videoId}" 
+                            frameborder="0" allowfullscreen>
+                        </iframe>
+                        <p style="font-family: sans-serif; font-size: 14px;">${title}</p>
+                    </div>
+                `;
+                container.innerHTML += videoHTML;
+            });
+        } catch (error) {
+            console.error('Error fetching YouTube videos:', error);
+        }
+    }
+
+    getLatestVideos();
+
